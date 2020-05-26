@@ -226,10 +226,10 @@ const fetchMachine = createMachine({
             (context, event) => ({
               ...context,
               retries: context.retries + 1
-            })
-          ]
-        }
-      }
+            }),
+          ],
+        },
+      },
     },
     cancelled: {
       type: 'final',
