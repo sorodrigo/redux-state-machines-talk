@@ -8,6 +8,10 @@ import { SlideLayout, SurferLayout } from "./layout";
 import blueTheme from "./theme";
 import "./css/font-face.css"
 
+import stateMachineChart from './images/state-machine@2x.png';
+import exampleUI from './images/UI-state-machine.gif';
+
+
 export const theme = blueTheme;
 
 <SlideLayout>
@@ -72,6 +76,427 @@ const sed = (eiusmod, tempor, incididunt) => {
 </Step>
 
 </CodeSurferColumns>
+</SurferLayout>
+
+---
+
+<SurferLayout>
+
+<CodeSurferColumns themes={[github, vsDark]} sizes={[1,1]}>
+
+<Step>
+
+<SlideLayout>
+
+## XState
+
+JS Library for creating state machines declaratively. It supports:
+
++ States (normal, final, transient).
++ Transitions.
++ JSON syntax.
+
+</SlideLayout>
+
+```js
+import { createMachine } from '@xstate/fsm';
+
+const fetchMachine = createMachine({
+  id: 'fetch',
+  initial: 'idle',
+  states: {
+    idle: {
+      on: {
+        // EVENT: targetStateName
+        FETCH: 'loading',
+      },
+    },
+    loading: { ... },
+    success: { ... },
+    cancelled: { ... },
+    failure: { ... },
+  },
+});
+
+const nextState = fetchMachine.transition('idle', 'FETCH');
+// -> { value: 'loading', ... }
+```
+
+</Step>
+
+<Step>
+
+<SlideLayout>
+
++ You can define transitions between states.
++ Define final states.
+
+</SlideLayout>
+
+```js
+import { createMachine } from '@xstate/fsm';
+
+const fetchMachine = createMachine({
+  id: 'fetch',
+  initial: 'idle',
+  states: {
+    idle: {
+      on: {
+        // EVENT: targetStateName
+        FETCH: 'loading',
+      },
+    },
+    loading: {
+      on: {
+        RESOLVE: 'success',
+        CANCEL: 'cancelled',
+        REJECT: 'failure',
+      },
+    },
+    success: {
+      on: {
+        REFRESH: 'loading',
+      },
+    },
+    failure: {
+      on: {
+        RETRY: {
+          target: 'loading',
+        },
+      },
+    },
+    cancelled: {
+      type: 'final',
+    },
+  }
+});
+```
+
+</Step>
+
+<Step>
+
+<SlideLayout>
+
++ Extended state support (called _context_).
++ Support of side effects (called _actions_).
+
+</SlideLayout>
+
+```js
+import { createMachine } from '@xstate/fsm';
+
+const fetchMachine = createMachine({
+  id: 'fetch',
+  initial: 'idle',
+  context: {
+    data: null,
+    retries: 0,
+  },
+  states: {
+    idle: {
+      on: {
+        // EVENT: targetStateName
+        FETCH: 'loading',
+      },
+    },
+    loading: {
+      on: {
+        RESOLVE: 'success',
+        CANCEL: 'cancelled',
+        REJECT: 'failure',
+      },
+    },
+    success: {
+      on: {
+        REFRESH: 'loading',
+        actions: [
+          (context, event) => ({
+            ...context,
+            data: event.data
+          }),
+        ],
+      },
+    },
+    failure: {
+      on: {
+        RETRY: {
+          target: 'loading',
+          actions: [
+            (context, event) => ({
+              ...context,
+              retries: context.retries + 1
+            }),
+          ],
+        },
+      },
+    },
+    cancelled: {
+      type: 'final',
+    },
+  }
+});
+```
+
+</Step>
+
+</CodeSurferColumns>
+
+</SurferLayout>
+
+---
+
+<SlideLayout style={{ textAlign: 'center' }}>
+
+## Neat, but... <br/>How is this related to a reducer?
+
+</SlideLayout>
+
+---
+
+<SurferLayout>
+
+<CodeSurferColumns themes={[vsDark, vsDark]} sizes={[1,1]}>
+
+<Step>
+
+<SlideLayout>
+
+## Consider a State Machine as "A one big fancy reducer"
+
+A state machines needs:
+
++ A set of finite states.
++ An initial state.
++ An (optional) set of final states.
++ A *state-transition function*.
+
+</SlideLayout>
+
+
+```js
+/*
+ * naive implementation of the createMachine function
+ */
+function createMachine(machineDef) {
+  const machine = {
+    // set the machine value to the initial state
+    value: machineDef.initial,
+    context: machineDef.context || {},
+
+    transition(currentState, event) {
+      // state-transition function signature:
+      // (state, event) => nextState
+    },
+  }
+  return machine
+}
+```
+
+</Step>
+
+<Step>
+
+<SlideLayout>
+
+### Naive implementation
+
+We can determine the next state of the state machine with the **PURE** state-transition function.
+
+Let's get the definition of the current state, and determine the target state for the provided event.
+
+</SlideLayout>
+
+
+```js 9:10
+function createMachine(machineDef) {
+  const machine = {
+    // set the machine value to the initial state
+    value: machineDef.initial,
+    context: machineDef.context || {},
+
+    // state-transition function
+    transition(state, event) {
+      const currentStateDef = machineDef[state]
+      const nextState = currentStateDef.on[event.type]
+
+      if (!nextState) {
+        return currentStateDef;
+      }
+
+      const nextStateDef = machineDef[nextState]
+      const newState = { ...machine, value: nextState }
+
+      return newState
+    },
+  }
+  return machine
+}
+```
+
+</Step>
+
+<Step>
+
+<SlideLayout>
+
+If the current state does not support the provided transition, do nothing.
+
+</SlideLayout>
+
+
+```js 12:14
+function createMachine(machineDef) {
+  const machine = {
+    // set the machine value to the initial state
+    value: machineDef.initial,
+    context: machineDef.context || {},
+
+    // state-transition function
+    transition(state, event) {
+      const currentStateDef = machineDef[state]
+      const nextState = currentStateDef.on[event.type]
+
+      if (!nextState) {
+        return currentStateDef;
+      }
+
+      const nextStateDef = machineDef[nextState]
+      const newState = { ...machine, value: nextState }
+
+      return newState
+    },
+  }
+  return machine
+}
+```
+
+</Step>
+
+<Step>
+
+<SlideLayout>
+
+Finally, get the definition of the next state, execute other actions – such as modifying context, entry and exit transitions –, and return the next state.
+
+and we're done 😁
+
+</SlideLayout>
+
+
+```js 16:24
+function createMachine(machineDef) {
+  const machine = {
+    // set the machine value to the initial state
+    value: machineDef.initial,
+    context: machineDef.context || {},
+
+    // state-transition function
+    transition(state, event) {
+      const currentStateDef = machineDef[state]
+      const nextState = currentStateDef.on[event.type]
+
+      if (!nextState) {
+        return currentStateDef;
+      }
+
+      const nextStateDef = machineDef[nextState]
+      const nextActions = nextStateDef.actions
+
+      const nextContext = nextActions.reduce(
+        (result, action) => action(result, event), context
+      )
+      const newState = { ...machine, value: nextState, context: nextContext }
+
+      return newState
+    },
+  }
+  return machine
+}
+```
+
+</Step>
+
+<Step>
+
+<SlideLayout>
+
+If you noticed, this is, at the core, a reducer function! We can use it in `Array.prototype.reduce` to resolve a sequence of events.
+
+</SlideLayout>
+
+```js
+const eventsSequence = [
+  { type: 'FETCH' },
+  { type: 'RESOLVE', payload: ['foo', 'bar'] },
+  { type: 'REFRESH' },
+  { type: 'REJECT', payload: new Error() },
+  { type: 'RETRY' },
+  { type: 'REFRESH' },  // invalid transition here!
+  { type: 'RESOLVE', payload: ['baz'] },
+]
+
+const finalState = eventsSequence.reduce(
+  fetchMachine.transition,
+  fetchMachine.initial
+)
+
+// -> { value: 'success', context: { data: ['baz'], retries: 1 } }
+console.log(finalState)
+```
+
+</Step>
+
+</CodeSurferColumns>
+
+</SurferLayout>
+
+---
+
+<SurferLayout>
+
+<CodeSurferColumns sizes={[1, 1]}>
+
+<Step>
+
+<SlideLayout>
+
+## State Machines for UI
+
+In addition to complex states, state machines can also be used for modelling UI components (a button is just a tiny state machine).
+
+</SlideLayout>
+
+
+<SlideLayout>
+
+<img src={exampleUI} />
+
+</SlideLayout>
+
+</Step>
+
+<Step>
+
+<SlideLayout>
+
+## State Machines for UI
+
+State machines can be statically analized, and even dynamically visualized. State diagrams are a nice way to visualize the possible states of a UI.
+
+</SlideLayout>
+
+
+<SlideLayout>
+
+<img src={stateMachineChart} />
+
+</SlideLayout>
+
+</Step>
+
+</CodeSurferColumns>
+
 </SurferLayout>
 
 ---
