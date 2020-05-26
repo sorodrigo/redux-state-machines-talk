@@ -5,14 +5,7 @@ const slideLayoutStyle = css`
   h1,h2,h3,h4,h5,h6 {
     margin-block-start: 0;
     margin-block-end: 32px;
-  }
-
-  h1, h2, h3 {
     color: #32C850;
-  }
-
-  h4,h5,h6 {
-    color: #ffffff;
   }
 
   p {
