@@ -10,20 +10,22 @@ const slideLayoutStyle = css`
   h4,h5,h6 {
     color: #ffffff;
   }
+
+  padding: 3rem;
 `;
 
 const surferLayoutStyle = css`
   margin: -2em;
 `;
 
-export const SlideLayout = ({ children }) => (
-  <div css={slideLayoutStyle}>
+export const SlideLayout = ({ children, style }) => (
+  <div css={slideLayoutStyle} style={style}>
     {children}
   </div>
 )
 
-export const SurferLayout = ({ children }) => (
-  <div css={surferLayoutStyle}>
+export const SurferLayout = ({ children, style }) => (
+  <div css={surferLayoutStyle} style={style}>
     {children}
   </div>
 )
