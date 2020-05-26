@@ -10,6 +10,7 @@ import "./css/font-face.css"
 import stateMachineChart from './images/state-machine@2x.png';
 import exampleUI from './images/UI-state-machine.gif';
 import coolStoryBro from './images/cool.gif';
+import mapVideo from './images/map-example.mp4';
 
 
 export const theme = taxfix;
@@ -437,6 +438,23 @@ const fetchMachine = createMachine({
   But we're using redux...🙈
 </div>
 
+</SlideLayout>
+
+---
+
+<SlideLayout>
+
+<div
+  style={{
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    height: "100%",
+    width: "100%"
+  }}
+>
+  <video autoplay loop src={mapVideo} style={{ height: "65%" }} />
+</div>
 </SlideLayout>
 
 ---
