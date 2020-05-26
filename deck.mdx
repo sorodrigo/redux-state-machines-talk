@@ -426,7 +426,7 @@ If you noticed, this is, at the core, a reducer function! We can use it in `Arra
 </SlideLayout>
 
 ```js
-const statesSequence = [
+const eventsSequence = [
   { type: 'FETCH' },
   { type: 'RESOLVE', payload: ['foo', 'bar'] },
   { type: 'REFRESH' },
@@ -436,7 +436,7 @@ const statesSequence = [
   { type: 'RESOLVE', payload: ['baz'] },
 ]
 
-const finalState = statesSequence.reduce(
+const finalState = eventsSequence.reduce(
   fetchMachine.transition,
   fetchMachine.initial
 )
