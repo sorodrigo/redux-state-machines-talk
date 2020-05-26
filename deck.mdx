@@ -82,7 +82,7 @@ const sed = (eiusmod, tempor, incididunt) => {
 
 <SurferLayout>
 
-<CodeSurferColumns themes={[github, vsDark]} sizes={[1,2]}>
+<CodeSurferColumns themes={[github, vsDark]} sizes={[1,1]}>
 
 <Step>
 
@@ -90,11 +90,11 @@ const sed = (eiusmod, tempor, incididunt) => {
 
 ## XState
 
-JavaScript Library for building state machines declaratively.
+JS Library for creating state machines declaratively. It supports:
 
-It supports the basics of state machines (states, transitions, actions, final states) among other things.
-
-XState allows to define state machines using JSON syntax.
++ States (normal, final, transient).
++ Transitions.
++ JSON syntax.
 
 </SlideLayout>
 
@@ -108,14 +108,14 @@ const fetchMachine = createMachine({
     idle: {
       on: {
         // EVENT: targetStateName
-        FETCH: 'loading'
-      }
+        FETCH: 'loading',
+      },
     },
     loading: { ... },
     success: { ... },
     cancelled: { ... },
-    failure: { ... }
-  }
+    failure: { ... },
+  },
 });
 
 const nextState = fetchMachine.transition('idle', 'FETCH');
@@ -128,7 +128,8 @@ const nextState = fetchMachine.transition('idle', 'FETCH');
 
 <SlideLayout>
 
-Each state can define its allowed transitions, and other handy features, such as: whether the state is final, entry and exit transitions, actions (a.k.a: side effects) for each state, etc.
++ You can define transitions between states.
++ Define final states (states with no transitions).
 
 </SlideLayout>
 
@@ -142,27 +143,27 @@ const fetchMachine = createMachine({
     idle: {
       on: {
         // EVENT: targetStateName
-        FETCH: 'loading'
-      }
+        FETCH: 'loading',
+      },
     },
     loading: {
       on: {
         RESOLVE: 'success',
         CANCEL: 'cancelled',
         REJECT: 'failure',
-      }
+      },
     },
     success: {
       on: {
-        REFRESH: 'loading'
-      }
+        REFRESH: 'loading',
+      },
     },
     failure: {
       on: {
         RETRY: {
-          target: 'loading'
-        }
-      }
+          target: 'loading',
+        },
+      },
     },
     cancelled: {
       type: 'final',
@@ -177,9 +178,8 @@ const fetchMachine = createMachine({
 
 <SlideLayout>
 
-XState also supports extended state (or context) to save additional information in the state machine, related to the states.
-
-You can use state actions to mutate this extended state.
++ Extended state support (called _context_).
++ Support of side effects (called _actions_).
 
 </SlideLayout>
 
@@ -192,20 +192,20 @@ const fetchMachine = createMachine({
   context: {
     data: null,
     retries: 0,
-  }
+  },
   states: {
     idle: {
       on: {
         // EVENT: targetStateName
-        FETCH: 'loading'
-      }
+        FETCH: 'loading',
+      },
     },
     loading: {
       on: {
         RESOLVE: 'success',
         CANCEL: 'cancelled',
         REJECT: 'failure',
-      }
+      },
     },
     success: {
       on: {
@@ -214,9 +214,9 @@ const fetchMachine = createMachine({
           (context, event) => ({
             ...context,
             data: event.data
-          })
-        ]
-      }
+          }),
+        ],
+      },
     },
     failure: {
       on: {
@@ -266,10 +266,10 @@ const fetchMachine = createMachine({
 
 A state machines needs:
 
-+ a set of finite states.
-+ an initial state.
-+ an (optional) set of final states.
-+ and a *state-transition function*.
++ A set of finite states.
++ An initial state.
++ An (optional) set of final states.
++ A *state-transition function*.
 
 </SlideLayout>
 
@@ -301,14 +301,14 @@ function createMachine(machineDef) {
 
 ### Naive implementation
 
-From the static definition, we can determine the next state of the state machine with the **PURE** state-transition function.
+We can determine the next state of the state machine with the **PURE** state-transition function.
 
-First, let's get the definition of the current state, and determine the target state for the provided event.
+Let's get the definition of the current state, and determine the target state for the provided event.
 
 </SlideLayout>
 
 
-```js 9:12
+```js 9:10
 function createMachine(machineDef) {
   const machine = {
     // set the machine value to the initial state
@@ -317,20 +317,15 @@ function createMachine(machineDef) {
 
     // state-transition function
     transition(state, event) {
-      // get the definition of the current state
       const currentStateDef = machineDef[state]
-      // get the ID of the next state
-      const nextState = currentStateDef.on[event]
+      const nextState = currentStateDef.on[event.type]
 
-      // this state does not support this transition. Therefore, do nothing
       if (!nextState) {
         return currentStateDef;
       }
 
       const nextStateDef = machineDef[nextState]
       const newState = { ...machine, value: nextState }
-
-      // TODO: execute entry and exit actions of each state
 
       return newState
     },
@@ -350,7 +345,7 @@ If the current state does not support the provided transition, do nothing.
 </SlideLayout>
 
 
-```js 13:16
+```js 12:14
 function createMachine(machineDef) {
   const machine = {
     // set the machine value to the initial state
@@ -359,20 +354,15 @@ function createMachine(machineDef) {
 
     // state-transition function
     transition(state, event) {
-      // get the definition of the current state
       const currentStateDef = machineDef[state]
-      // get the ID of the next state
-      const nextState = currentStateDef.on[event]
+      const nextState = currentStateDef.on[event.type]
 
-      // this state does not support this transition. Therefore, do nothing
       if (!nextState) {
         return currentStateDef;
       }
 
       const nextStateDef = machineDef[nextState]
       const newState = { ...machine, value: nextState }
-
-      // TODO: execute entry and exit actions of each state
 
       return newState
     },
@@ -387,14 +377,14 @@ function createMachine(machineDef) {
 
 <SlideLayout>
 
-Finally, we can get the definition of the next state, execute other actions – such as modifying context, entry and exit transitions –, and return the next state.
+Finally, get the definition of the next state, execute other actions – such as modifying context, entry and exit transitions –, and return the next state.
 
 and we're done 😁
 
 </SlideLayout>
 
 
-```js 18:27
+```js 16:24
 function createMachine(machineDef) {
   const machine = {
     // set the machine value to the initial state
@@ -403,12 +393,9 @@ function createMachine(machineDef) {
 
     // state-transition function
     transition(state, event) {
-      // get the definition of the current state
       const currentStateDef = machineDef[state]
-      // get the ID of the next state
       const nextState = currentStateDef.on[event.type]
 
-      // this state does not support this transition. Therefore, do nothing
       if (!nextState) {
         return currentStateDef;
       }
@@ -416,7 +403,6 @@ function createMachine(machineDef) {
       const nextStateDef = machineDef[nextState]
       const nextActions = nextStateDef.actions
 
-      // Modify machine state and context
       const nextContext = nextActions.reduce(
         (result, action) => action(result, event), context
       )
@@ -435,7 +421,7 @@ function createMachine(machineDef) {
 
 <SlideLayout>
 
-If you noticed, that is just a reducer function! We can use it in `Array.prototype.reduce` to resolve a sequence of events
+If you noticed, this is, at the core, a reducer function! We can use it in `Array.prototype.reduce` to resolve a sequence of events.
 
 </SlideLayout>
 
@@ -448,15 +434,15 @@ const statesSequence = [
   { type: 'RETRY' },
   { type: 'REFRESH' },  // invalid transition here!
   { type: 'RESOLVE', payload: ['baz'] },
-];
+]
 
 const finalState = statesSequence.reduce(
   fetchMachine.transition,
   fetchMachine.initial
-);
+)
 
 // -> { value: 'success', context: { data: ['baz'], retries: 1 } }
-console.log(finalState);
+console.log(finalState)
 ```
 
 </Step>

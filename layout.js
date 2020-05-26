@@ -7,8 +7,24 @@ const slideLayoutStyle = css`
     margin-block-end: 32px;
   }
 
+  h1, h2, h3 {
+    color: #32C850;
+  }
+
   h4,h5,h6 {
     color: #ffffff;
+  }
+
+  p {
+    color: #ffffff;
+    font-weight: normal;
+  }
+
+  p code {
+    font-size: 0.75em;
+    background-color: #141727;
+    padding: 0 0.5em;
+    border-radius: 2px;
   }
 
   padding: 3rem;
