@@ -17,21 +17,23 @@ export const theme = taxfix;
 
 <SlideLayout>
 
-# Modeling reducers as
-# state machines,
-#### (specially without xState)
+# Modeling reducers as <br /> state machines,
+`(specially without xState)`
 
 <br />
 <br />
 
-Rodrigo Solís ‧ Andrés Osorio
+<div style={{ textAlign: "right" }}>
+  Andrés Osorio ‧ Rodrigo Solís
+</div>
+
 </SlideLayout>
 
 ---
 
 <SlideLayout>
 
-# Why??
+![why](https://media.giphy.com/media/s239QJIh56sRW/giphy.gif)
 
 </SlideLayout>
 
@@ -260,6 +262,54 @@ console.log(finalState)
 
 <SurferLayout>
 
+<CodeSurferColumns sizes={[1, 1]}>
+
+<Step>
+
+<SlideLayout>
+
+## State Machines for UI
+
+In addition to complex states, state machines can also be used for modeling UI components (a button is just a tiny state machine).
+
+</SlideLayout>
+
+
+<SlideLayout>
+
+<img src={exampleUI} />
+
+</SlideLayout>
+
+</Step>
+
+<Step>
+
+<SlideLayout>
+
+## State Machines for UI
+
+State machines can be statically analized, and even dynamically visualized. State diagrams are a nice way to visualize the possible states of a UI.
+
+</SlideLayout>
+
+
+<SlideLayout>
+
+<img src={stateMachineChart} />
+
+</SlideLayout>
+
+</Step>
+
+</CodeSurferColumns>
+
+</SurferLayout>
+
+---
+
+<SurferLayout>
+
 <CodeSurferColumns themes={[draculaTaxfix, draculaTaxfix]} sizes={[1,1]}>
 
 <Step>
@@ -444,6 +494,21 @@ const fetchMachine = createMachine({
 
 <SlideLayout>
 
+## Top 3 things to avoid <br /> when writing reducer's code
+----
+
+1. Saving derived state as state
+
+2. Leaking logic into async methods (sagas, thunks, etc)
+
+3. Using Redux as a glorified setter
+
+</SlideLayout>
+
+---
+
+<SlideLayout>
+
 <div
   style={{
     display: "flex",
@@ -507,7 +572,7 @@ const reducer = (state = initialState, action) =>
   />
 ```
 
-```js 4[12:24],5[13:36],9[13:40] title="reducer.js"
+```js 4[12:24],5[13:35],9[13:39] title="reducer.js"
 const reducer = (state = initialState, action) =>
   produce(state, draft => {
     switch(action.type) {
@@ -542,7 +607,9 @@ const reducer = (state = initialState, action) =>
 
 <SlideLayout>
 
-hey
+- Clear **strong** boundaries between `deleting` and `idle` statuses
+
+- Easier to reason about
 
 </SlideLayout>
 
@@ -574,7 +641,11 @@ function idleStatus(state, action, draft) {
 
 <SlideLayout>
 
-hey
+- Promotes composability
+
+- Sharing code between statuses becomes a conscious decision
+
+- Easy to test
 
 </SlideLayout>
 
@@ -611,48 +682,16 @@ const reducer = (state = initialState, action) =>
 
 ---
 
-<SurferLayout>
-
-<CodeSurferColumns sizes={[1, 1]}>
-
-<Step>
-
 <SlideLayout>
 
-## State Machines for UI
+Keep tuned for more
 
-In addition to complex states, state machines can also be used for modelling UI components (a button is just a tiny state machine).
+<div style={{ textAlign: "center" }}>
+
+## Thanks 👋
+
+</div>
+
 
 </SlideLayout>
 
-
-<SlideLayout>
-
-<img src={exampleUI} />
-
-</SlideLayout>
-
-</Step>
-
-<Step>
-
-<SlideLayout>
-
-## State Machines for UI
-
-State machines can be statically analized, and even dynamically visualized. State diagrams are a nice way to visualize the possible states of a UI.
-
-</SlideLayout>
-
-
-<SlideLayout>
-
-<img src={stateMachineChart} />
-
-</SlideLayout>
-
-</Step>
-
-</CodeSurferColumns>
-
-</SurferLayout>
