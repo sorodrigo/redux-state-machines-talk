@@ -45,7 +45,7 @@ export const theme = taxfix;
 ----
 - Forces you to think about app lifecycle from day one
 
-- Explicit definition of whats possible at every moment in an application
+- Explicit definition of what's possible at every moment in an application
 
 - `Loading` is an antipattern – Recipe for inconsistent states.
 
@@ -73,7 +73,7 @@ export const theme = taxfix;
 
 A state machines needs:
 
-+ A set of finite states.
++ A finite set of states.
 + An initial state.
 + An (optional) set of final states.
 + A *state-transition function*.
@@ -81,10 +81,34 @@ A state machines needs:
 </SlideLayout>
 
 
-```js
+```js 5:6,8:24,34:38
 /*
  * naive implementation of the createMachine function
  */
+const exampleLightbulbMachineDef = {
+  initial: 'off',
+  context: { color: 'white' },
+  states: {
+    turnedOn: {
+      on: {
+        TOGGLE: 'turnedOff',
+        BREAK: 'broken',
+      },
+    },
+    turnedOff: {
+      on: {
+        TOGGLE: 'turnedOn',
+        BREAK: 'broken',
+        actions: [(context, event) => ({ ...context, color: event.payload })],
+      },
+    },
+    broken: {
+      type: 'final',
+      entry: (context, event) => ({ color: null }),
+    },
+  }
+};
+
 function createMachine(machineDef) {
   const machine = {
     // set the machine value to the initial state
@@ -93,6 +117,7 @@ function createMachine(machineDef) {
 
     transition(currentState, event) {
       // state-transition function signature:
+      // event = { type: string, payload?: any }
       // (state, event) => nextState
     },
   }
@@ -233,23 +258,31 @@ If you noticed, this is, at the core, a reducer function! We can use it in `Arra
 </SlideLayout>
 
 ```js
+const lightbulb = createMachine({
+  initial: 'off',
+  context: { color: 'white' },
+  states: {
+    turnedOn: {...},
+    turnedOff: {...},
+    broken: {...},
+  }
+})
+
 const eventsSequence = [
-  { type: 'FETCH' },
-  { type: 'RESOLVE', payload: ['foo', 'bar'] },
-  { type: 'REFRESH' },
-  { type: 'REJECT', payload: new Error() },
-  { type: 'RETRY' },
-  { type: 'REFRESH' },  // invalid transition here!
-  { type: 'RESOLVE', payload: ['baz'] },
+  { type: 'TOGGLE', payload: '#ff0000' },
+  { type: 'TOGGLE' },
+  { type: 'TOGGLE', payload: '#ff00ff' },
+  { type: 'BREAK' },
+  { type: 'TOGGLE' },  // invalid transition here!
 ]
 
 const finalState = eventsSequence.reduce(
-  fetchMachine.transition,
-  fetchMachine.initial
+  lightbulb.transition,
+  lightbulb.initial
 )
 
-// -> { value: 'success', context: { data: ['baz'], retries: 1 } }
 console.log(finalState)
+// -> { value: 'broken', context: { color: null } }
 ```
 
 </Step>
@@ -268,16 +301,16 @@ console.log(finalState)
 
 <SlideLayout>
 
-## State Machines for UI
+## State Machines are declarative
 
-In addition to complex states, state machines can also be used for modeling UI components (a button is just a tiny state machine).
+State machines can be statically analyzed, and even dynamically visualized. State diagrams are a nice way to visualize the possible states of a machine.
 
 </SlideLayout>
 
 
 <SlideLayout>
 
-<img src={exampleUI} />
+<img src={stateMachineChart} />
 
 </SlideLayout>
 
@@ -289,14 +322,14 @@ In addition to complex states, state machines can also be used for modeling UI c
 
 ## State Machines for UI
 
-State machines can be statically analized, and even dynamically visualized. State diagrams are a nice way to visualize the possible states of a UI.
+State machines can be used for modeling UI components and even entire Application UIs, in addition to complex application states (a button is just a tiny state machine).
 
 </SlideLayout>
 
 
 <SlideLayout>
 
-<img src={stateMachineChart} />
+<img src={exampleUI} />
 
 </SlideLayout>
 
