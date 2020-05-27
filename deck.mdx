@@ -3,252 +3,59 @@ import {
   CodeSurferColumns,
   Step,
 } from "code-surfer";
-import { github, vsDark } from "@code-surfer/themes";
 import { SlideLayout, SurferLayout } from "./layout";
-import blueTheme from "./theme";
+import taxfix, { draculaTaxfix } from "./theme";
 import "./css/font-face.css"
 
 import stateMachineChart from './images/state-machine@2x.png';
 import exampleUI from './images/UI-state-machine.gif';
+import coolStoryBro from './images/cool.gif';
+import mapVideo from './images/map-example.mp4';
 
 
-export const theme = blueTheme;
+export const theme = taxfix;
 
 <SlideLayout>
 
-# Modeling reducers as
-# state machines,
-#### (specially without xState)
+# Modeling reducers as <br /> state machines,
+`(specially without xState)`
 
-<br/>
+<br />
 <br />
 
-_Rodrigo Solís ‧ Andrés Osorio_
+<div style={{ textAlign: "right" }}>
+  Andrés Osorio ‧ Rodrigo Solís
+</div>
+
 </SlideLayout>
 
 ---
 
-<SurferLayout>
-<CodeSurferColumns themes={[vsDark, github]}>
+<SlideLayout>
 
-<Step>
+![why](https://media.giphy.com/media/s239QJIh56sRW/giphy.gif)
 
-```js
-const magna = aliqua => aliqua.ut((enim, ad) => enim, 0);
-```
-
-```js
-const minim = (ad, enim) => dolore.magna(ad / enim);
-```
-
-</Step>
-
-<Step>
-
-```js
-const lorem = (ipsum, dolor, sit) => {
-  const amet = dolor - ipsum;
-  return consectetur.adipiscing(
-    {
-      elit: sed.eiusmod(sit - dolor) / amet + 2,
-    },
-    (tempor, incididunt) => ipsum + amet * incididunt
-  );
-};
-
-const magna = aliqua => aliqua.ut((enim, ad) => enim, 0);
-```
-
-```js
-const minim = (ad, enim) => dolore.magna(ad / enim);
-
-const sed = (eiusmod, tempor, incididunt) => {
-  const ut = tempor - eiusmod;
-  return labore.et(
-    {
-      amet: dolore.magna(incididunt - tempor) / ut + 2,
-    },
-    (aliqua, elit) => eiusmod + ut * elit
-  );
-};
-```
-
-</Step>
-
-</CodeSurferColumns>
-</SurferLayout>
+</SlideLayout>
 
 ---
 
-<SurferLayout>
-
-<CodeSurferColumns themes={[github, vsDark]} sizes={[1,1]}>
-
-<Step>
-
 <SlideLayout>
 
-## XState
+#### Why??
+----
+- Forces you to think about app lifecycle from day one
 
-JS Library for creating state machines declaratively. It supports:
+- Explicit definition of whats possible at every moment in an application
 
-+ States (normal, final, transient).
-+ Transitions.
-+ JSON syntax.
-
-</SlideLayout>
-
-```js
-import { createMachine } from '@xstate/fsm';
-
-const fetchMachine = createMachine({
-  id: 'fetch',
-  initial: 'idle',
-  states: {
-    idle: {
-      on: {
-        // EVENT: targetStateName
-        FETCH: 'loading',
-      },
-    },
-    loading: { ... },
-    success: { ... },
-    cancelled: { ... },
-    failure: { ... },
-  },
-});
-
-const nextState = fetchMachine.transition('idle', 'FETCH');
-// -> { value: 'loading', ... }
-```
-
-</Step>
-
-<Step>
-
-<SlideLayout>
-
-+ You can define transitions between states.
-+ Define final states.
+- `Loading` is an antipattern – Recipe for inconsistent states.
 
 </SlideLayout>
-
-```js
-import { createMachine } from '@xstate/fsm';
-
-const fetchMachine = createMachine({
-  id: 'fetch',
-  initial: 'idle',
-  states: {
-    idle: {
-      on: {
-        // EVENT: targetStateName
-        FETCH: 'loading',
-      },
-    },
-    loading: {
-      on: {
-        RESOLVE: 'success',
-        CANCEL: 'cancelled',
-        REJECT: 'failure',
-      },
-    },
-    success: {
-      on: {
-        REFRESH: 'loading',
-      },
-    },
-    failure: {
-      on: {
-        RETRY: {
-          target: 'loading',
-        },
-      },
-    },
-    cancelled: {
-      type: 'final',
-    },
-  }
-});
-```
-
-</Step>
-
-<Step>
-
-<SlideLayout>
-
-+ Extended state support (called _context_).
-+ Support of side effects (called _actions_).
-
-</SlideLayout>
-
-```js
-import { createMachine } from '@xstate/fsm';
-
-const fetchMachine = createMachine({
-  id: 'fetch',
-  initial: 'idle',
-  context: {
-    data: null,
-    retries: 0,
-  },
-  states: {
-    idle: {
-      on: {
-        // EVENT: targetStateName
-        FETCH: 'loading',
-      },
-    },
-    loading: {
-      on: {
-        RESOLVE: 'success',
-        CANCEL: 'cancelled',
-        REJECT: 'failure',
-      },
-    },
-    success: {
-      on: {
-        REFRESH: 'loading',
-        actions: [
-          (context, event) => ({
-            ...context,
-            data: event.data
-          }),
-        ],
-      },
-    },
-    failure: {
-      on: {
-        RETRY: {
-          target: 'loading',
-          actions: [
-            (context, event) => ({
-              ...context,
-              retries: context.retries + 1
-            }),
-          ],
-        },
-      },
-    },
-    cancelled: {
-      type: 'final',
-    },
-  }
-});
-```
-
-</Step>
-
-</CodeSurferColumns>
-
-</SurferLayout>
 
 ---
 
 <SlideLayout style={{ textAlign: 'center' }}>
 
-## Neat, but... <br/>How is this related to a reducer?
+## Ok, but... <br/>What's a state machine?
 
 </SlideLayout>
 
@@ -256,13 +63,13 @@ const fetchMachine = createMachine({
 
 <SurferLayout>
 
-<CodeSurferColumns themes={[vsDark, vsDark]} sizes={[1,1]}>
+<CodeSurferColumns themes={[draculaTaxfix, draculaTaxfix]} sizes={[1,1]}>
 
 <Step>
 
 <SlideLayout>
 
-## Consider a State Machine as "A one big fancy reducer"
+## Consider a State Machine as "One big fancy reducer"
 
 A state machines needs:
 
@@ -463,7 +270,7 @@ console.log(finalState)
 
 ## State Machines for UI
 
-In addition to complex states, state machines can also be used for modelling UI components (a button is just a tiny state machine).
+In addition to complex states, state machines can also be used for modeling UI components (a button is just a tiny state machine).
 
 </SlideLayout>
 
@@ -501,4 +308,390 @@ State machines can be statically analized, and even dynamically visualized. Stat
 
 ---
 
-bye
+<SurferLayout>
+
+<CodeSurferColumns themes={[draculaTaxfix, draculaTaxfix]} sizes={[1,1]}>
+
+<Step>
+
+<SlideLayout>
+
+## XState
+
+JS Library for creating state machines declaratively. It supports:
+
++ States (normal, final, transient).
++ Transitions.
++ JSON syntax.
+
+</SlideLayout>
+
+```js
+import { createMachine } from '@xstate/fsm';
+
+const fetchMachine = createMachine({
+  id: 'fetch',
+  initial: 'idle',
+  states: {
+    idle: {
+      on: {
+        // EVENT: targetStateName
+        FETCH: 'loading',
+      },
+    },
+    loading: { ... },
+    success: { ... },
+    cancelled: { ... },
+    failure: { ... },
+  },
+});
+
+const nextState = fetchMachine.transition('idle', 'FETCH');
+// -> { value: 'loading', ... }
+```
+
+</Step>
+
+<Step>
+
+<SlideLayout>
+
++ You can define transitions between states.
++ Define final states.
+
+</SlideLayout>
+
+```js
+import { createMachine } from '@xstate/fsm';
+
+const fetchMachine = createMachine({
+  id: 'fetch',
+  initial: 'idle',
+  states: {
+    idle: {
+      on: {
+        // EVENT: targetStateName
+        FETCH: 'loading',
+      },
+    },
+    loading: {
+      on: {
+        RESOLVE: 'success',
+        CANCEL: 'cancelled',
+        REJECT: 'failure',
+      },
+    },
+    success: {
+      on: {
+        REFRESH: 'loading',
+      },
+    },
+    failure: {
+      on: {
+        RETRY: {
+          target: 'loading',
+        },
+      },
+    },
+    cancelled: {
+      type: 'final',
+    },
+  }
+});
+```
+
+</Step>
+
+<Step>
+
+<SlideLayout>
+
++ Extended state support (called _context_).
++ Support of side effects (called _actions_).
+
+</SlideLayout>
+
+```js
+import { createMachine } from '@xstate/fsm';
+
+const fetchMachine = createMachine({
+  id: 'fetch',
+  initial: 'idle',
+  context: {
+    data: null,
+    retries: 0,
+  },
+  states: {
+    idle: {
+      on: {
+        // EVENT: targetStateName
+        FETCH: 'loading',
+      },
+    },
+    loading: {
+      on: {
+        RESOLVE: 'success',
+        CANCEL: 'cancelled',
+        REJECT: 'failure',
+      },
+    },
+    success: {
+      on: {
+        REFRESH: 'loading',
+        actions: [
+          (context, event) => ({
+            ...context,
+            data: event.data
+          }),
+        ],
+      },
+    },
+    failure: {
+      on: {
+        RETRY: {
+          target: 'loading',
+          actions: [
+            (context, event) => ({
+              ...context,
+              retries: context.retries + 1
+            }),
+          ],
+        },
+      },
+    },
+    cancelled: {
+      type: 'final',
+    },
+  }
+});
+```
+
+</Step>
+
+</CodeSurferColumns>
+
+</SurferLayout>
+
+---
+
+<SlideLayout>
+
+<div style={{ width: "100%", textAlign: "center" }}>
+
+##  Cool story bro
+
+</div>
+
+<img src={coolStoryBro} style={{ width: "100%" }} />
+
+<div style={{ width: "100%", textAlign: "center" }}>
+  But we're using redux...🙈
+</div>
+
+</SlideLayout>
+
+---
+
+<SlideLayout>
+
+## Top 3 things to avoid <br /> when writing reducers code
+----
+
+1. Saving derived state as state
+
+2. Leaking logic into async methods (sagas, thunks, etc)
+
+3. Using Redux as a glorified setter
+
+</SlideLayout>
+
+---
+
+<SlideLayout>
+
+<div
+  style={{
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    height: "100%",
+    width: "100%"
+  }}
+>
+  <video autoplay loop src={mapVideo} style={{ height: "65%" }} />
+</div>
+</SlideLayout>
+
+---
+
+<SurferLayout>
+
+<CodeSurferColumns themes={[draculaTaxfix, draculaTaxfix]} sizes={[1,1]}>
+
+<Step>
+
+```jsx title="marker.jsx"
+  <Marker
+    id={shop.id}
+    onClick={
+      isDeleting
+      ? () => deleteShopById(shop.id)
+      : () => setSelectedShopId(shop.id)
+    }
+  />
+```
+
+```js title="reducer.js"
+const reducer = (state = initialState, action) =>
+  produce(state, draft => {
+    switch(action.type) {
+      case 'setSelectedShopId': {
+        const id = getMarkerId(action.payload);
+        draft.selectedShopId = id;
+        return draft;
+      }
+      case 'deleteShopById': {
+        const id = getMarkerId(action.payload);
+        delete draft.shops[id];
+        return draft;
+      }
+    }
+  });
+```
+
+</Step>
+
+<Step>
+
+```jsx title="marker.jsx"
+  <Marker
+    id={shop.id}
+    onClick={
+      () => clickMarker(shop.id)
+    }
+  />
+```
+
+```js 4[12:24],5[13:35],9[13:39] title="reducer.js"
+const reducer = (state = initialState, action) =>
+  produce(state, draft => {
+    switch(action.type) {
+      case 'clickMarker': {
+        if (state.status === 'idle') {
+          const id = getMarkerId(action.payload);
+          draft.selectedShopId = id;
+        }
+        if (state.status === 'deleting') {
+          const id = getMarkerId(action.payload);
+          delete draft.shops[id];
+        }
+        return draft;
+      }
+    }
+  });
+```
+
+</Step>
+
+</CodeSurferColumns>
+
+</SurferLayout>
+
+---
+
+<SurferLayout>
+
+<CodeSurferColumns themes={[draculaTaxfix, draculaTaxfix]}  sizes={[1, 2]}>
+
+<Step>
+
+<SlideLayout>
+
+- Clear **strong** boundaries between `deleting` and `idle` statuses
+
+- Easier to reason about
+
+</SlideLayout>
+
+```js title="reducer.js"
+function deletingStatus(state, action, draft) {
+  switch (action.type) {
+    case 'clickMarker': {
+      const id = getMarkerId(action.payload);
+      delete draft.shops[id];
+      return draft;
+    }
+  }
+}
+
+function idleStatus(state, action, draft) {
+  switch (action.type) {
+    case 'clickMarker': {
+      const id = getMarkerId(action.payload);
+      draft.selectedShopId = id;
+      return draft;
+    }
+  }
+}
+```
+
+</Step>
+
+<Step>
+
+<SlideLayout>
+
+- Promotes composability
+
+- Sharing code between statuses becomes a conscious decision
+
+- Easy to test
+
+</SlideLayout>
+
+```js title="reducer.js"
+const reducer = (state = initialState, action) =>
+  produce(state, draft => {
+    if (state.status === 'idle') {
+      idleStatus(state, action, draft);
+    }
+
+    if (state.status === 'creating') {
+      creatingStatus(state, action, draft);
+    }
+
+    if (state.status === 'deleting') {
+      deletingStatus(state, action, draft);
+    }
+
+    if (state.status === 'editing') {
+      editingStatus(state, action, draft);
+    }
+
+    if (state.status === 'saving') {
+      savingStatus(state, action, draft);
+    }
+  });
+```
+
+</Step>
+
+</CodeSurferColumns>
+
+</SurferLayout>
+
+---
+
+<SlideLayout>
+
+Keep tuned for more
+
+<div style={{ textAlign: "center" }}>
+
+## Thanks 👋
+
+</div>
+
+
+</SlideLayout>
+
