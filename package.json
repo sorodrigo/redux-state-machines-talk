@@ -12,6 +12,6 @@
   },
   "name": "redux-state-machines",
   "dependencies": {
-    "immer": "^6.0.8"
+    "immer": "^8.0.1"
   }
 }
